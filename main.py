@@ -16,57 +16,37 @@ fuzz_map = {
     "Incorrecto": 0.0
 }
 
+properties = ["T_max","RainProb","PhysCons"]
 
-# ---------- dominance primitives ----------
-def s(x: float, y: float) -> float:
-    return 1.0 if x < y else 0.5 if x == y else 0.0
+def pass_rule(W):
+    return W >= 0.5
 
 def r(x: float, y: float) -> float:
-    return 0.5 * (y - x + 1.0)
+    return 0.5 * ((y - x) + 1.0)
 
-def df_score(A: Set[float], B: Set[float],
+def get_expert_evaluation(baselines, expert_info, property):
+    propertyExpertItem = expert_info[property].pop()
+    baselineItem = baselines[property]
+    propertyExpertMeanProperty = 0
 
-    kernel: Callable[[float, float], float]) -> float:
-    return mean(kernel(a, b) for a in A for b in B)
+    for baselineValue in baselineItem:
+        propertyExpertMeanProperty += r(baselineValue, propertyExpertItem)
 
-def dominance(A: Set[float], B: Set[float], method: str = "R") -> float:
-    if method.upper() == "S":
-        return df_score(A, B, s)
-    elif method.upper() == "R":
-        return df_score(A, B, r)
-    else:
-        raise ValueError("method␣must␣be␣’S’␣or␣’R’")
+    #print("Para el experto:"+str(expert_info)+" y la propiedad: "+ property + " tenemos el valor:"+str(propertyExpertMeanProperty / len(baselineItem)))
+    return propertyExpertMeanProperty / len(baselineItem)
 
-# ---------- pipeline ----------
-def evaluate_text(
-    expert_evals: List[Dict[str, Set[float]]],
-    baselines: Dict[str, Set[float]],
-    crit_weights: Dict[str, float]= None,
-    expert_weights: List[float] = None,
-    df_method: str = "R",
-    pass_rule: Callable[[float], bool] = lambda W: W >= 0.5
-    ):
+def evaluate_expert_text(baselines, expert_evals):
+    
+    expert_evaluation = 0
 
-    """Return accepted?, global score W, per-expert scores w_i."""
-    m = len(baselines)
-    if crit_weights is None:
-        crit_weights = {c: 1.0 / m for c in baselines}
-    if expert_weights is None:
-        expert_weights = [1.0 / len(expert_evals)] * len(expert_evals)
-
-    w_i: List[float] = []
-    for E in expert_evals:
-        d_vals = []
-        for crit, B_k in baselines.items():
-            A_ik = E[crit]
-            d_vals.append(dominance(B_k, A_ik, df_method))
-            # media ponderada sobre criterios
-            w_i.append(sum(w * d for w, d in zip(
-            (crit_weights[c] for c in baselines), d_vals)))
-            # agregacin sobre expertos
-        W = sum(w * wi for w, wi in zip(expert_weights, w_i))
-    return pass_rule(W), W, w_i
-
+    for property in properties:
+        evaluation = 0
+        for expert in expert_evals:
+            evaluation += get_expert_evaluation(baselines, expert, property)
+        expert_evaluation += evaluation / len(expert_evals)
+        print("Evaluación para la propiedad:"+property+" es:"+str(evaluation / len(expert_evals)))
+    
+    return expert_evaluation / len(properties)
 
 # Función de fuzzificación
 def fuzzimap(valor):
@@ -88,10 +68,17 @@ baselines = {
 
 
 valores_expertos = [
+    {"T_max": ["Bien", "Regular"], "RainProb": ["Perfecto"], "PhysCons": ["Perfecto"]},
+    {"T_max": ["Muy bien"], "RainProb": ["Regular"], "PhysCons": ["Perfecto"]},
+    {"T_max": ["Perfecto"], "RainProb": ["Malo"], "PhysCons": ["Muy malo"]}
+]
+'''
+valores_expertos = [
     {"T_max": ["Perfecto"], "RainProb": ["Perfecto"], "PhysCons": ["Perfecto"]},
     {"T_max": ["Perfecto"], "RainProb": ["Perfecto"], "PhysCons": ["Perfecto"]},
     {"T_max": ["Perfecto"], "RainProb": ["Perfecto"], "PhysCons": ["Perfecto"]}
 ]
+'''
 
 experts = []
 for i in range(3):
@@ -118,8 +105,12 @@ experts = [
 ]
 '''
 
+print(valores_expertos)
 print(experts)
 
+W = evaluate_expert_text(baselines, experts)
+print("Global␣score:", W, "", "ACCEPTED" if pass_rule(W) else "REJECTED")
+
+'''
 accepted, W, w_i = evaluate_text(experts, baselines)
-print("Global␣score:", W, "", "ACCEPTED" if accepted else "REJECTED")
-print("Per-expert:", w_i)
+'''
