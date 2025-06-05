@@ -5,7 +5,7 @@ from hesitant.Fuzzy import Fuzzy
 class Experto:
     
     #Son las propiedades que hay que evaluar en el texto.
-    propiedades = ["T_max","RainProb","PhysCons"]
+    propiedades = ["precision","adecuacion","cohesion"]
 
     #Representa el valor del filtro que se desea aplicar para ver si la media de los expertos consideran
     #que es una respuesta aceptable o no.
@@ -44,15 +44,15 @@ class Experto:
         for experto in expertos:
             numero_experto += 1 #Solo tiene proposito de depuracion
             evaluation = 0
-            print("-------------- Experto"+str(numero_experto)+" ----------------")
+            #print("-------------- Experto"+str(numero_experto)+" ----------------")
             for property in self.propiedades:
                 sumProperty = self.valoracion(bases, experto, property)
                 mediaProperty = sumProperty / (len(bases[property]) * len(experto[property]))
-                print("Resultado propiedad:"+property+" es:", mediaProperty)
+                #print("Resultado propiedad:"+property+" es:", mediaProperty)
                 evaluation += mediaProperty
             expert_evaluation += evaluation / len(expertos)
             
-            print("Evaluación del experto"+str(numero_experto)+" es:"+str(evaluation / len(self.propiedades)))
+            #print("Evaluación del experto"+str(numero_experto)+" es:"+str(evaluation / len(self.propiedades)))
         return expert_evaluation / len(self.propiedades)
 
     #Regla que se aplica para indicar si el texto es aceptable o no. True si es aceptable

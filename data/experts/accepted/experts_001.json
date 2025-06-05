@@ -1,0 +1,17 @@
+[
+    {
+        "precision": ["Muy bien"],
+        "adecuacion": ["Perfecto"],
+        "cohesion": ["Perfecto"]
+    },
+    {
+      "precision": ["Perfecto", "Muy bien"],
+      "adecuacion": ["Perfecto"],
+      "cohesion": ["Perfecto"]
+    },
+    {
+        "precision": ["Bien"],
+        "adecuacion": ["Perfecto"],
+        "cohesion": ["Perfecto"]
+    }
+]

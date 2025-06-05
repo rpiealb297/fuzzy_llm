@@ -1,0 +1,5 @@
+{
+    "precision": [ 0.8, 0.9 ],
+    "adecuacion": [ 0.7 ],
+    "cohesion": [ 0.6 ]
+}

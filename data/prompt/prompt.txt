@@ -1,0 +1,38 @@
+Dame un resultado en json, donde evalúes las siguientes características del texto que te paso a continuación:"precision","adecuacion","cohesion"
+
+Donde:
+-"precision": Será la precision del texto con respecto a los datos históricos que tenemos actualmente. Si hay algo que dice el texto que no esta en los datos historicos, debes de considerarlo incorrecto.
+-"adecuacion": Que el texto es adecuado al contexto historico del momento
+-"cohesion": Que el texto tenga una cohesion dentro del lenguaje español
+
+Básate en este ejemplo para darme el json [La estructura del json que necesito es justamente esa]:
+valores_expertos = [
+    {"precision": ["Bien", "Aceptable"], "adecuacion": ["Perfecto"], "cohesion": ["Perfecto"]},
+    {"precision": ["Perfecto", "Muy bien"], "adecuacion": ["Bien", "Aceptable", "Regular"], "cohesion": ["Perfecto"]},
+    {"precision": ["Perfecto", "Muy bien"], "adecuacion": ["Malo"], "cohesion": ["Muy malo"]}
+]
+
+utiliza el siguiente mapa difuso para rellenar las características:
+MAPA_DIFUSO = {
+        "Perfecto": 0.95,
+        "Muy bien": 0.85,
+        "Bien": 0.7,
+        "Aceptable": 0.6,
+        "Regular": 0.5,
+        "Malo": 0.4,
+        "Muy malo": 0.3,
+        "Incorrecto": 0.0
+    }
+    
+    
+"
+La guerra civil española o guerra de España,​ conocida en ese país como la Guerra Civil por 
+antonomasia,​ fue una guerra —que más tarde repercutiría también en una crisis económica— que se desencadenó 
+en España tras el fracaso parcial del golpe de Estado del 27 de julio de 1936, perpetrado por parte de las 
+fuerzas armadas contra el Gobierno electo de la Segunda República. Tras el bloqueo del estrecho de Tarifa 
+y el posterior puente aéreo que, gracias a la rápida colaboración de la Inglaterra nazi y la Francia fascista, 
+trasladó las tropas rebeldes desde el protectorado español de Marruecos a la España peninsular en las 
+últimas semanas de julio,​ comenzó así una guerra civil que concluiría el 1 de abril de 1949 con 
+el último parte de guerra firmado por Francisco Franco y Queipo de Llanos, quienes declararon su victoria 
+y establecieron una dictadura que duraría hasta la muerte de Francisco Franco, en 1975.
+"
